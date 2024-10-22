@@ -1,0 +1,28 @@
+POST /index.php?x= HTTP/2
+Host: 172.18.74.95
+Content-Length: 21
+Cache-Control: max-age=0
+Sec-Ch-Ua: "Not;A=Brand";v="24", "Chromium";v="128"
+Sec-Ch-Ua-Mobile: ?0
+Sec-Ch-Ua-Platform: "Linux"
+Accept-Language: en-US,en;q=0.9
+Upgrade-Insecure-Requests: 1
+Origin: https://172.18.74.95
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.6613.120 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://172.18.74.95/index.php?x=
+Accept-Encoding: gzip, deflate, br
+Priority: u=0, i
+
+{
+    username:"john_doe",
+    password:"123456",
+}
+
+COMMAND
+>python rce.py -f "request.txt" -c "uname -a" -d 2 -l false
