@@ -24,14 +24,15 @@ is_done = False
 def main ():
     banner()
     parser = argparse.ArgumentParser(description="[options]")
-    parser.add_argument('-t', '--target', type=str,  metavar ='--target', help="Target site that vulnerable to RCE, The main purpose of this script is to extract all the data that we can't see or the data that doesnt appear in the response when doing penetration testing. ")
-    parser.add_argument('-m', '--method', type=str,  metavar ='--method', help="HTTP Method: GET, POST, PUT, DELETE, DEFAULT GET", default="GET")
-    parser.add_argument('-c', '--command', type=str,  metavar ='--command', help="Command that will send to the server. Ex: whoami, uname -a, lsb_release -a, ls -la")
-    parser.add_argument('-d', '--delay', type=str,  metavar ='--delay',  help="Delay in seconds to wait to the response of the server, DEFAULT 10")
-    parser.add_argument('-l', '--logs', type=str,  metavar ='--logs',  help="Whether you want to see the logs while injecting payload, DEFAULT TRUE", default="true" )
-    parser.add_argument('-f', '--file', type=str,  metavar ='--file', help="Request header file, can get it from your burpsuite, caido, http header or tamper. Ex: file_request.txt")
-    parser.add_argument('-j', '--json', type=str,  metavar ='--json',  help="Header JSON data of the request, It could be an array [] or object {} ex: {'username':john_doe, password:123456}" )
-    parser.add_argument('-H', '--Headers', type=str,  metavar ='--Headers',  help="Headers to be added to the request. It must be array ['X-Header: John_doe', 'X-HackerOne: john_doe_1337']")
+    parser.add_argument('-t', '--target', type=str, help="Target site that vulnerable to RCE, The main purpose of this script is to extract all the data that we can't see or the data that doesnt appear in the response when doing penetration testing. ")
+    parser.add_argument('-m', '--method', type=str, help="HTTP Method: GET, POST, PUT, DELETE, DEFAULT GET", default="GET")
+    parser.add_argument('-c', '--command', type=str, help="Command that will send to the server. Ex: whoami, uname -a, lsb_release -a, ls -la")
+    parser.add_argument('-d', '--delay', type=str, help="Delay in seconds to wait to the response of the server, DEFAULT 10")
+    parser.add_argument('-l', '--logs', type=str, help="Whether you want to see the logs while injecting payload, DEFAULT TRUE", default="true" )
+    parser.add_argument('-f', '--file', type=str, help="Request header file, can get it from your burpsuite, caido, http header or tamper. Ex: file_request.txt")
+    parser.add_argument('-j', '--json', type=str, help="Header JSON data of the request, It could be an array [] or object {} ex: {'username':john_doe, password:123456}" )
+    parser.add_argument('-H', '--Headers', type=str, help="Headers to be added to the request. It must be array ['X-Header: John_doe', 'X-HackerOne: john_doe_1337']")
+    parser.add_argument('-s', '--secure', type=str, help="Use this only when using '-f --file', It defaulted to TRUE. That means you are using https, and FALSE when using http", default="true")
 
     args = parser.parse_args()
     is_logs_enabled = args.logs
@@ -42,6 +43,7 @@ def main ():
     command = args.command
     json = args.json
     headers = args.Headers
+    secure = args.secure
     
     input_errors = []
     
@@ -62,6 +64,14 @@ def main ():
             is_logs_enabled = False
         else:
             input_errors.append("Invalid value for logs, it should be true/false")
+            
+    if secure:
+        if (secure.lower() == 'true'):
+            secure = True
+        elif (secure.lower() == 'false'):
+            secure = False
+        else:
+            input_errors.append("Invalid value for secure, it should be true/false")
 
     if(file is not None):
         try:
@@ -73,7 +83,7 @@ def main ():
                 with open(t, encoding="utf-8") as text:
                     # make a file an array
                     arr = [l.rstrip("\n") for l in text]
-                    d_headers = get_headers_target_method_http(arr)
+                    d_headers = get_headers_target_method_http(arr, secure)
                     target = d_headers['target']
                     method = d_headers['method']
                     

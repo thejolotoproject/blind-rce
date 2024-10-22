@@ -4,14 +4,12 @@ import re
 
 def get_headers(arr_data):
     arr = arr_data
-    #remove first line, POST /login HTTP/2
     get_only_data_with_colon = [k for k in arr if ':' in k]
     header = list()
     for x in get_only_data_with_colon:
-        if(x[:2] != "  "):   # removing data with spaces in front because
-            header.append(x) # the scripts assume that this is a object or array
+        if(x[:2] != "  "):   # removing data with spaces in front
+            header.append(x)
     return header
-
 
 # it returns a string object or array from a file
 # ex: {username:john_doe,password:123456} OR
@@ -33,7 +31,7 @@ def get_header_json_object(arr_data):
     return obj_str
 
 # it returns a method, target and http from a file, POST, target, HTTP/2
-def get_headers_target_method_http(arr_data):
+def get_headers_target_method_http(arr_data,secure):
     arr = arr_data
     
     # remove empty array
@@ -51,14 +49,16 @@ def get_headers_target_method_http(arr_data):
     target = re.sub("host:", "", target, flags=re.I) 
     path = a[1] # /login_path
     primary = {
-        "target":http_normalize_slashes("%s%s"%(target,path)), # https://www.google.com
+        "target":http_normalize_slashes("%s%s"%(target,path),secure), # https://www.google.com
         "method": a[0], # POST
         "http": a[2] # HTTP/2
     }
     return primary
 
 # removing extra slashes in the url and adding https as prefix
-def http_normalize_slashes(url):
+def http_normalize_slashes(url,secure):
+    if(secure == True): secure = 'https:'
+    else: secure = 'http:'
     url = str(url)
     segments = url.split('/')
     correct_segments = []
@@ -66,8 +66,8 @@ def http_normalize_slashes(url):
         if segment != '':
             correct_segments.append(segment)
     first_segment = str(correct_segments[0])
-    if first_segment.find('http') == -1:
-        correct_segments = ['http:'] + correct_segments
+    if first_segment.find(secure) == -1:
+        correct_segments = [secure] + correct_segments
     correct_segments[0] = correct_segments[0] + '/'
     normalized_url = '/'.join(correct_segments)
     return normalized_url.replace(" ", "")
