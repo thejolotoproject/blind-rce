@@ -49,7 +49,7 @@ async def call(data):
     except SystemExit:
         pass
         
-delays = [1, 1, 1]
+delays = [5, 10, 20]
 call_i =  0
 def vulnerability_check(data):
     target,method,headers,json = data.values()
